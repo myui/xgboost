@@ -68,6 +68,15 @@ class NativeLibLoader {
   }
 
   /**
+   * Check if a given path exits, or not
+   * @param path
+   * @return true iff the given path exists
+   */
+  private static boolean hasResource(String path) {
+    return NativeLibLoader.class.getResource(path) != null;
+  }
+
+  /**
    * Create a temp file that copies the resource from current JAR archive
    * <p/>
    * The file from JAR is copied into system temp file.
@@ -147,10 +156,23 @@ class NativeLibLoader {
     addNativeDir(nativePath);
     try {
       System.loadLibrary(libName);
+      logger.info("succeeded to load library from system path");
     } catch (UnsatisfiedLinkError e) {
       try {
-        String libraryFromJar = nativeResourcePath + System.mapLibraryName(libName);
-        loadLibraryFromJar(libraryFromJar);
+        // Load an OS-dependent native library inside a jar file
+        String nativeLibraryPath = nativeResourcePath + OSInfo.getNativeLibFolderPathForCurrentOS();
+        String libraryFromJar = System.mapLibraryName(libName);
+
+        boolean hasNativeLib = hasResource(nativeLibraryPath + "/" + libraryFromJar);
+        if (!hasNativeLib) {
+          if (OSInfo.getOSName().equals("Mac")) {
+            // Fix for openjdk7 for Mac
+            // A detail of this workaround can be found in https://github.com/xerial/snappy-java/issues/6
+            libraryFromJar = "lib" + libName + ".jnilib";
+          }
+        }
+        loadLibraryFromJar(nativeLibraryPath + "/" + libraryFromJar);
+        logger.info("succeeded to load library from " + nativeLibraryPath + "/" + libraryFromJar);
       } catch (IOException ioe) {
         logger.error("failed to load library from both native path and jar");
         throw ioe;

@@ -6,10 +6,10 @@
     <parent>
         <groupId>ml.dmlc</groupId>
         <artifactId>xgboost-jvm</artifactId>
-        <version>0.5</version>
+        <version>0.10</version>
     </parent>
-    <artifactId>xgboost4j</artifactId>
-    <version>0.5</version>
+    <artifactId>xgboost4j-0.60</artifactId>
+    <version>${project.parent.version}</version>
     <packaging>jar</packaging>
     <build>
         <plugins>
@@ -48,6 +48,20 @@
         </plugins>
     </build>
     <dependencies>
+        <!-- compile scope -->
+        <dependency>
+            <groupId>com.esotericsoftware.kryo</groupId>
+            <artifactId>kryo</artifactId>
+            <version>2.21</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- test scope -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

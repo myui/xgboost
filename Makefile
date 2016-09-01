@@ -39,8 +39,16 @@ ifndef CXX
 export CXX = $(if $(shell which g++-5),g++-5,g++)
 endif
 
+# set options for portabiity
+ifdef ENABLE_STATIC_LINKS
+export SHARED_FLAGS = -fPIC -shared -static-libgcc -static-libstdc++ -fvisibility=hidden
+else
+export SHARED_FLAGS = -fPIC -shared -fvisibility=hidden
+endif
+
 export LDFLAGS= -pthread -lm $(ADD_LDFLAGS) $(DMLC_LDFLAGS) $(PLUGIN_LDFLAGS)
-export CFLAGS=  -std=c++0x -Wall -O3 -msse2  -Wno-unknown-pragmas -funroll-loops -Iinclude $(ADD_CFLAGS) $(PLUGIN_CFLAGS)
+export CFLAGS= -std=c++0x -Wall -O2 -msse2  -Wno-unknown-pragmas -funroll-loops $(SHARED_FLAGS) -m64 -Iinclude $(ADD_CFLAGS) $(PLUGIN_CFLAGS)
+
 CFLAGS += -I$(DMLC_CORE)/include -I$(RABIT)/include
 #java include path
 export JAVAINCFLAGS = -I${JAVA_HOME}/include -I./java
